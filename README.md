@@ -28,6 +28,9 @@ but are missing the EyeAdaptation node.
 ### fix_eye_adaptation.py
 Automatically inserts `EyeAdaptation → Divide → Emissive Color` into every material that needs it.
 
+> **⚠️ Backup your mod folder before running this script.**
+> It modifies and saves materials automatically with no undo. Make a copy of your Content/Mods folder first.
+
 1. Set `MOD_PATH` to your mod folder
 2. Run with `DRY_RUN = True` first to preview changes
 3. Set `DRY_RUN = False` to apply
