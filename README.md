@@ -3,65 +3,83 @@
 Python tools and migration reference for Conan Exiles mod makers upgrading to UE5.
 
 Run all scripts from the **UE5 Devkit Output Log**:
-
+```
+py "C:/path/to/script.py"
+```
 
 ---
 
 ## Materials
 
-### check_eye_adaptation.py
-Scans all Surface materials in your mod folder and reports which ones have Emissive Color connected but are missing the required EyeAdaptation node.
+### Why EyeAdaptation → Divide is required in UE5
 
-**UE5 requires EyeAdaptation → Divide on all emissive materials to prevent blown-out brightness.**
+Conan Exiles UE5 uses **Eye Adaptation** (auto-exposure) which dynamically adjusts scene brightness.
+Without compensating for it in emissive materials:
+
+- **Daytime** — emissive glow is barely visible because the scene is bright and eye adaptation dims everything
+- **Nighttime** — emissive is massively blown out and overexposed
+
+The fix is to divide the emissive value by the current Eye Adaptation value, so the emissive output
+scales correctly with the scene exposure at all times of day.
+
+```
+[Your Emissive] --> Divide.A
+EyeAdaptation   --> Divide.B
+Divide          --> Emissive Color
+```
+
+### check_eye_adaptation.py
+Scans all Surface materials in your mod folder and reports which ones have Emissive Color connected
+but are missing the EyeAdaptation node.
 
 ### fix_eye_adaptation.py
-Automatically inserts  into every material that needs it.
+Automatically inserts `EyeAdaptation → Divide → Emissive Color` into every material that needs it.
 
-1. Set  to your mod folder
-2. Run with  first to preview changes
-3. Set  to apply
+1. Set `MOD_PATH` to your mod folder
+2. Run with `DRY_RUN = True` first to preview changes
+3. Set `DRY_RUN = False` to apply
 
 ---
 
 ## Blueprints
 
 ### create_bp_ee_inputbox.py
-Creates  as a subclass of .
+Creates `BP_EE_InputBox` as a subclass of `W_InputBox_C`.
 
-Required because UE5 removed , , and .
-Since , ,  etc. are  in UE5, external Blueprints
-cannot access them directly. A subclass exposes public  /  event dispatchers.
+Required because UE5 removed `CreateInputBox`, `ShowInputBox`, and `SignalInputUserActionPerformed`.
+Since `ButtonOk`, `ButtonCancel`, `EditableTextBox` etc. are `Protected` in UE5, external Blueprints
+cannot access them directly. A subclass exposes public `OnConfirmed` / `OnCancelled` event dispatchers.
 
 ---
 
-## UE4 → UE5 Blueprint API Changes
+## UE4 to UE5 Blueprint API Changes
 
 | UE4 | UE5 | Notes |
 |-----|-----|-------|
-|  |  | Same pins |
-|  |  (Buff System Interface) | Target = OwningCharacter, pass  |
-|  |  (Buff System Interface) | Same as above |
-|  | Removed | Widget lifecycle is automatic. Use  for cleanup |
-|  |  | Also needs  first |
-|  |  | Returns remaining seconds (float) |
-|  |  | Same node, space removed from name |
-|  |  | On SkeletalMeshComponent |
-|  |  subclass pattern | See blueprints/ |
-|  |  on widget instance | |
-|  |  /  dispatchers | |
+| `Event StartBuff` | `Event OnStartBuff` | Same pins |
+| `Clear Buff` | `Remove Buff Call` (Buff System Interface) | Target = OwningCharacter, pass `Get Class(self)` |
+| `Client Clear Buff` | `Remove Buff Call` (Buff System Interface) | Same as above |
+| `Remove Buff Widget` | Removed | Widget lifecycle is automatic. Use `OnClearBuff` for cleanup |
+| `Add Buff Widget` | `Call Signal Buff Added on Owning Client` | Also needs `Initialize Buff System` first |
+| `Get Buff Duration` | `Get Remaining Buff Duration` | Returns remaining seconds (float) |
+| `Stop Buff Sound` | `StopBuffSound` | Same node, space removed from name |
+| `Get Skeletal Mesh` | `Get Skeletal Mesh Asset` | On SkeletalMeshComponent |
+| `CreateInputBox` | `BP_EE_InputBox` subclass pattern | See blueprints/ |
+| `ShowInputBox` | `Open(0)` on widget instance | |
+| `SignalInputUserActionPerformed` | `OnConfirmed` / `OnCancelled` dispatchers | |
 
 ---
 
 ## Common Load Errors
 
-### 
+### `Invalid value for PACKAGE_FILE_TAG`
 UE4 binary asset copied directly into UE5 project. Fix: export as CSV from UE4 devkit, reimport in UE5.
 
-### 
-Struct property GUIDs changed between UE4 and UE5. Fix: open the Blueprint, find the Make/Break struct node, right-click → Refresh Node.
+### `Failed import for [Property] ... : [GUID]`
+Struct property GUIDs changed between UE4 and UE5. Fix: open the Blueprint, find the Make/Break struct node, right-click Refresh Node.
 
-### 
-Animation sequence has corrupt frame rate from UE4→UE5 migration. Fix: enable  in Asset Details, or reimport from source FBX.
+### `Invalid frame rate provided: -0.001s`
+Animation sequence has corrupt frame rate from UE4 to UE5 migration. Fix: enable `Use Default Sample Rate` in Asset Details, or reimport from source FBX.
 
 ---
 
