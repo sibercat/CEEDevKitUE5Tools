@@ -3,10 +3,6 @@
 Python tools and migration reference for Conan Exiles mod makers upgrading to UE5.
 
 Run all scripts from the **UE5 Devkit Output Log**:
-```
-py "C:/path/to/script.py"
-```
-
 ---
 
 ## Materials
@@ -38,17 +34,6 @@ Automatically inserts `EyeAdaptation → Divide → Emissive Color` into every m
 1. Set `MOD_PATH` to your mod folder
 2. Run with `DRY_RUN = True` first to preview changes
 3. Set `DRY_RUN = False` to apply
-
----
-
-## Blueprints
-
-### create_bp_ee_inputbox.py
-Creates `BP_EE_InputBox` as a subclass of `W_InputBox_C`.
-
-Required because UE5 removed `CreateInputBox`, `ShowInputBox`, and `SignalInputUserActionPerformed`.
-Since `ButtonOk`, `ButtonCancel`, `EditableTextBox` etc. are `Protected` in UE5, external Blueprints
-cannot access them directly. A subclass exposes public `OnConfirmed` / `OnCancelled` event dispatchers.
 
 ---
 
