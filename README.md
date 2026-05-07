@@ -38,6 +38,11 @@ Automatically inserts `EyeAdaptation → Divide → Emissive Color` into every m
 2. Run with `DRY_RUN = True` first to preview changes
 3. Set `DRY_RUN = False` to apply
 
+### check_broken_references.py
+Scans all assets in your mod folder and reports references that point to packages that no longer exist.
+Useful for finding assets that lost their references during the UE4 → UE5 migration (show as `None` in the editor).
+Outputs the old path the reference used to point to, so you can track down or replace the missing asset.
+
 ---
 
 ## UE4 to UE5 Blueprint API Changes
