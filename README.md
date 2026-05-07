@@ -19,9 +19,7 @@ The fix is to divide the emissive value by the current Eye Adaptation value, so 
 scales correctly with the scene exposure at all times of day.
 
 ```
-[Your Emissive] --> Divide.A
-EyeAdaptation   --> Divide.B
-Divide          --> Emissive Color
+![Dashboard](https://raw.githubusercontent.com/sibercat/CEEDevKitUE5Tools/refs/heads/main/EyeAdaptation.png)
 ```
 
 ### check_eye_adaptation.py
