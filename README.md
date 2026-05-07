@@ -18,7 +18,7 @@ Without compensating for it in emissive materials:
 The fix is to divide the emissive value by the current Eye Adaptation value, so the emissive output
 scales correctly with the scene exposure at all times of day.
 
-![Dashboard](https://raw.githubusercontent.com/sibercat/CEEDevKitUE5Tools/refs/heads/main/EyeAdaptation.png)
+![EyeAdaptation](https://raw.githubusercontent.com/sibercat/CEEDevKitUE5Tools/refs/heads/main/EyeAdaptationv2.png)
 
 
 ### check_eye_adaptation.py
