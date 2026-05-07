@@ -3,6 +3,9 @@
 Python tools and migration reference for Conan Exiles mod makers upgrading to UE5.
 
 Run all scripts from the **UE5 Devkit Output Log**:
+<p>
+  <img src="https://raw.githubusercontent.com/sibercat/CEEDevKitUE5Tools/refs/heads/main/scripts.webp" width="700" height="300" title="hover text">
+</p>
 ---
 
 ## Materials
