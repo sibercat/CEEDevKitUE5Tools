@@ -64,5 +64,3 @@ Struct property GUIDs changed between UE4 and UE5. Fix: open the Blueprint, find
 Animation sequence has corrupt frame rate from UE4 to UE5 migration. Fix: enable `Use Default Sample Rate` in Asset Details, or reimport from source FBX.
 
 ---
-
-Made by [sibercat](https://github.com/sibercat) — ExilesExtreme mod author
