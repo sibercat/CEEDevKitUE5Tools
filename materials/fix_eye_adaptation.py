@@ -2,7 +2,6 @@
 fix_eye_adaptation.py
 
 Run from the UE5 devkit Output Log:
-  py "C:/Users/plane/OneDrive/Desktop/fix_eye_adaptation.py"
 
 For every Surface material under MOD_PATH that has Emissive Color connected
 but NO EyeAdaptation node, inserts:
@@ -17,8 +16,7 @@ Set DRY_RUN = False to apply changes.
 import unreal
 
 MOD_PATH = "/Game/Mods/ExilesExtreme"
-DRY_RUN  = False   # <-- change to False when ready to apply
-
+DRY_RUN  = False
 
 def log(msg):      unreal.log(f"[EyeAdaptFix] {msg}")
 def log_warn(msg): unreal.log_warning(f"[EyeAdaptFix] {msg}")
