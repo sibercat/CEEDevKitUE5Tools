@@ -2,7 +2,7 @@
 find_skeleton_refs_editor.py
 
 Run from the UE5 devkit Output Log:
-  py "C:/Users/plane/OneDrive/Desktop/find_skeleton_refs_editor.py"
+  py "C:/Users/MyPC/OneDrive/Desktop/find_skeleton_refs_editor.py"
 
 Scans all assets under MOD_PATH and finds every asset that has
 sk_human_skeleton (or any SEARCH_TARGET you set) as a dependency.
