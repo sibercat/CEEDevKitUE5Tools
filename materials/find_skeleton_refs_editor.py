@@ -13,7 +13,7 @@ import unreal
 
 MOD_PATH      = "/Game/Mods/ExilesExtreme"
 SEARCH_TARGET = "/Game/Characters/humans/meshes/sk_human_skeleton"
-OUTPUT_FILE   = r"C:\Users\plane\OneDrive\Desktop\sk_human_skeleton_refs.txt"
+OUTPUT_FILE   = r"C:\Users\MyPC\OneDrive\Desktop\sk_human_skeleton_refs.txt"
 
 SKIP_PREFIXES = (
     "/Script/",
