@@ -15,19 +15,19 @@ of what actually exists at runtime.
 """
 
 import unreal
-import struct
 import os
 
 # ── Config ────────────────────────────────────────────────────────────────────
-MOD_PATH        = "/Game/Mods/ExilesExtreme"
-GAME_AR_PATH    = r"C:\Users\plane\AppData\Local\Temp\GameAR\ConanSandbox\AssetRegistry.bin"
-OUTPUT_FILE     = r"C:\Users\plane\OneDrive\Desktop\devkit_only_refs.txt"
+MOD_PATH         = "/Game/Mods/ExilesExtreme"
+GAME_PKGS_PATH   = r"C:\Users\plane\AppData\Local\Temp\GameAR\game_packages.txt"
+OUTPUT_FILE      = r"C:\Users\plane\OneDrive\Desktop\devkit_only_refs.txt"
 
 SKIP_PREFIXES = (
     "/Script/",
     "/Engine/",
     "/Game/Engine/",
-    "/Game/Mods/",      # mod assets are fine — they ship with EE
+    "/Game/Mods/",        # mod assets — ship with EE
+    "/Game/ModsShared/",  # shared mod APIs (Pippi, Joshtech etc) — not base game
 )
 
 # ── Logging ───────────────────────────────────────────────────────────────────
@@ -40,73 +40,23 @@ def log_warn(s):
     unreal.log_warning(s)
     lines.append(f"[WARN] {s}")
 
-# ── Parse shipped game AssetRegistry ─────────────────────────────────────────
-def read_game_asset_registry(path):
+# ── Load pre-built game package list ─────────────────────────────────────────
+def load_game_packages(path):
     """
-    Parse the shipped AssetRegistry.bin and return a set of lowercase
-    package names that exist in the shipped game.
-
-    Format (UE5):
-      4 bytes  magic  0x717F9EE7
-      4 bytes  version
-      name table: 4-byte count, then N length-prefixed strings
-      asset records follow (we only need the name table for package paths
-      since all referenced package names appear in it)
+    Load the text file produced by build_game_package_list.py.
+    Each line is a lowercase /Game/ package path from the shipped game.
     """
     game_packages = set()
-
     try:
-        with open(path, "rb") as f:
-            data = f.read()
-
-        offset = 0
-
-        def read_u32():
-            nonlocal offset
-            v = struct.unpack_from("<I", data, offset)[0]
-            offset += 4
-            return v
-
-        def read_str():
-            nonlocal offset
-            length = struct.unpack_from("<i", data, offset)[0]
-            offset += 4
-            if length == 0:
-                return ""
-            if length > 0:
-                raw = data[offset:offset+length]
-                offset += length
-                return raw.decode("utf-8", errors="replace").rstrip("\x00")
-            else:
-                # UTF-16 LE (negative length in UE)
-                byte_len = (-length) * 2
-                raw = data[offset:offset+byte_len]
-                offset += byte_len
-                return raw.decode("utf-16-le", errors="replace").rstrip("\x00")
-
-        magic = read_u32()
-        if magic != 0x717F9EE7:
-            log_warn(f"AssetRegistry magic mismatch: 0x{magic:08X} (expected 0x717F9EE7)")
-            log_warn("Attempting to parse anyway...")
-
-        version = read_u32()
-        log(f"Game AssetRegistry version: {version}")
-
-        name_count = read_u32()
-        log(f"Game AssetRegistry name table: {name_count} entries")
-
-        for _ in range(name_count):
-            name = read_str()
-            # Package paths start with /Game/ or /Engine/
-            if name.startswith("/Game/") or name.startswith("/Engine/"):
-                game_packages.add(name.lower())
-
-        log(f"Loaded {len(game_packages)} /Game/ + /Engine/ paths from shipped AssetRegistry")
-
+        with open(path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    game_packages.add(line)
+        log(f"Loaded {len(game_packages)} shipped game package paths")
     except Exception as e:
-        log_warn(f"Failed to parse game AssetRegistry: {e}")
-        log_warn("Check that the file was extracted correctly.")
-
+        log_warn(f"Failed to load game package list: {e}")
+        log_warn(f"Run build_game_package_list.py first (plain Python, outside devkit)")
     return game_packages
 
 
@@ -170,11 +120,11 @@ log("Finds base-game assets that exist in devkit but NOT in shipped game")
 log("=" * 70)
 log()
 
-if not os.path.exists(GAME_AR_PATH):
-    log_warn(f"Game AssetRegistry not found at: {GAME_AR_PATH}")
-    log_warn("Run extraction step first (see instructions).")
+if not os.path.exists(GAME_PKGS_PATH):
+    log_warn(f"Game package list not found at: {GAME_PKGS_PATH}")
+    log_warn("Run build_game_package_list.py first (plain Python 3, outside devkit).")
 else:
-    game_packages = read_game_asset_registry(GAME_AR_PATH)
+    game_packages = load_game_packages(GAME_PKGS_PATH)
     log()
 
     if game_packages:
