@@ -50,7 +50,20 @@ Useful for finding assets that lost their references during the UE4 → UE5 migr
 Outputs the old path the reference used to point to, so you can track down or replace the missing asset.
 
 ---
+### find_devkit_only_refs.py
+1. Parses the shipped game's AssetRegistry to build a ground-truth list of what actually exists at runtime
+2. Scans every EE asset's dependencies
+3. Flags anything that exists in the devkit but is missing from the shipped game — those are your phantom/devkit-only assets causing missing textures.
+Run it in the devkit and check devkit_only_refs.txt on your Desktop for the full list.
 
+---
+### extract_game_asset_registry.py
+It auto-detects common Steam install paths and devkit locations, extracts pakchunk0-Windows.pak using UnrealPak (which handles Oodle automatically), and drops the result in %TEMP%\GameAR\ where find_devkit_only_refs.py expects it.
+
+For the GitHub repo the workflow would be:
+1. Run extract_game_asset_registry.py once (or after game updates)
+2. Run find_devkit_only_refs.py in the devkit to scan for phantom refs
+---
 ## UE4 to UE5 Blueprint API Changes
 
 | UE4 | UE5 | Notes |
