@@ -50,6 +50,9 @@ Useful for finding assets that lost their references during the UE4 → UE5 migr
 Outputs the old path the reference used to point to, so you can track down or replace the missing asset.
 
 ---
+
+## AssetRegistry
+
 ### find_devkit_only_refs.py
 1. Parses the shipped game's AssetRegistry to build a ground-truth list of what actually exists at runtime
 2. Scans every EE asset's dependencies
