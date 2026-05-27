@@ -60,7 +60,6 @@ Run it in the devkit and check devkit_only_refs.txt on your Desktop for the full
 ### extract_game_asset_registry.py
 It auto-detects common Steam install paths and devkit locations, extracts pakchunk0-Windows.pak using UnrealPak (which handles Oodle automatically), and drops the result in %TEMP%\GameAR\ where find_devkit_only_refs.py expects it.
 
-For the GitHub repo the workflow would be:
 1. Run extract_game_asset_registry.py once (or after game updates)
 2. Run find_devkit_only_refs.py in the devkit to scan for phantom refs
 ---
