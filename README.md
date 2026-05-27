@@ -59,7 +59,7 @@ and materials at runtime even though everything looks fine in the editor.
 ### Workflow
 
 **Step 1 — `build_game_package_list.py`**
-Run once with plain Python 3 **outside the devkit** (double-click it).
+Run once with plain Python 3 **outside the devkit**.
 Scans all shipped game UTOCs via UnrealPak and builds a complete list of every package that actually exists at runtime.
 Re-run after game updates.
 
