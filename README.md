@@ -55,7 +55,7 @@ Outputs the old path the reference used to point to, so you can track down or re
 
 ### find_devkit_only_refs.py
 1. Parses the shipped game's AssetRegistry to build a ground-truth list of what actually exists at runtime
-2. Scans every EE asset's dependencies
+2. Scans every Mod asset's dependencies
 3. Flags anything that exists in the devkit but is missing from the shipped game — those are your phantom/devkit-only assets causing missing textures.
 Run it in the devkit and check devkit_only_refs.txt on your Desktop for the full list.
 
