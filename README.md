@@ -2,10 +2,11 @@
 
 Python tools and migration reference for Conan Exiles mod makers upgrading to UE5.
 
-Run all scripts from the **UE5 Devkit Output Log**:
+Run all devkit scripts from the **UE5 Devkit Output Log**:
 <p>
   <img src="https://raw.githubusercontent.com/sibercat/CEEDevKitUE5Tools/refs/heads/main/scripts.webp" width="700" height="300" title="hover text">
 </p>
+
 ---
 
 ## Materials
@@ -22,7 +23,6 @@ The fix is to divide the emissive value by the current Eye Adaptation value, so 
 scales correctly with the scene exposure at all times of day.
 
 ![EyeAdaptation](https://raw.githubusercontent.com/sibercat/CEEDevKitUE5Tools/refs/heads/main/EyeAdaptationv2.png)
-
 
 ### check_eye_adaptation.py
 Scans all Surface materials in your mod folder and reports which ones have Emissive Color connected
@@ -46,26 +46,34 @@ Automatically inserts `EyeAdaptation → Divide → Emissive Color` into every m
 Scans **all assets** in your mod folder (Blueprints, particle systems, meshes, materials, etc.) and
 reports any references that point to packages that no longer exist.
 
-Useful for finding assets that lost their references during the UE4 → UE5 migration (show as `None` in the editor).
+Useful for finding assets that lost their references during the UE4 → UE5 migration (shown as `None` in the editor).
 Outputs the old path the reference used to point to, so you can track down or replace the missing asset.
 
 ---
 
-## AssetRegistry
+## Phantom Asset Finder (Devkit-Only References)
 
-### find_devkit_only_refs.py
-1. Parses the shipped game's AssetRegistry to build a ground-truth list of what actually exists at runtime
-2. Scans every Mod asset's dependencies
-3. Flags anything that exists in the devkit but is missing from the shipped game — those are your phantom/devkit-only assets causing missing textures.
-Run it in the devkit and check devkit_only_refs.txt on your Desktop for the full list.
+Finds base-game assets that exist in the devkit but **not** in the shipped game — these cause missing textures
+and materials at runtime even though everything looks fine in the editor.
+
+### Workflow
+
+**Step 1 — `build_game_package_list.py`**
+Run once with plain Python 3 **outside the devkit** (double-click it).
+Scans all shipped game UTOCs via UnrealPak and builds a complete list of every package that actually exists at runtime.
+Re-run after game updates.
+
+> Requires UnrealPak.exe from your UE5 devkit and Conan Exiles installed via Steam.
+
+**Step 2 — `find_devkit_only_refs.py`**
+Run inside the **devkit Python console**.
+Loads the package list from Step 1, scans every asset in your mod folder, and flags any dependency
+that exists in the devkit but is missing from the shipped game.
+
+Results are saved to `Desktop\devkit_only_refs.txt`.
 
 ---
-### extract_game_asset_registry.py
-It auto-detects common Steam install paths and devkit locations, extracts pakchunk0-Windows.pak using UnrealPak (which handles Oodle automatically), and drops the result in %TEMP%\GameAR\ where find_devkit_only_refs.py expects it.
 
-1. Run extract_game_asset_registry.py once (or after game updates)
-2. Run find_devkit_only_refs.py in the devkit to scan for phantom refs
----
 ## UE4 to UE5 Blueprint API Changes
 
 | UE4 | UE5 | Notes |
@@ -90,9 +98,7 @@ It auto-detects common Steam install paths and devkit locations, extracts pakchu
 UE4 binary asset copied directly into UE5 project. Fix: export as CSV from UE4 devkit, reimport in UE5.
 
 ### `Failed import for [Property] ... : [GUID]`
-Struct property GUIDs changed between UE4 and UE5. Fix: open the Blueprint, find the Make/Break struct node, right-click Refresh Node.
+Struct property GUIDs changed between UE4 and UE5. Fix: open the Blueprint, find the Make/Break struct node, right-click → Refresh Node.
 
 ### `Invalid frame rate provided: -0.001s`
 Animation sequence has corrupt frame rate from UE4 to UE5 migration. Fix: enable `Use Default Sample Rate` in Asset Details, or reimport from source FBX.
-
----
