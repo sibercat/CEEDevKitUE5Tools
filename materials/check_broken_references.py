@@ -59,7 +59,7 @@ def check_broken_references():
             continue
 
         missing = []
-        for dep in deps:
+        for dep in (deps or []):
             dep_str = str(dep)
 
             # Skip engine/script packages
