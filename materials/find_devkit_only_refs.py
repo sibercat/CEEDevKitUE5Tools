@@ -103,8 +103,14 @@ def find_devkit_only_refs(game_packages):
                 continue
 
             # If it's in the devkit registry but NOT in the shipped game → phantom
-            devkit_exists = len(registry.get_assets_by_package_name(dep_str)) > 0
-            if devkit_exists and dep_str.lower() not in game_packages:
+            devkit_assets = registry.get_assets_by_package_name(dep_str)
+            if not devkit_assets:
+                continue
+            # Skip redirectors — Funcom moved the asset to a new path in UE5
+            # but left a redirector at the old path. Game resolves it at runtime.
+            if any(str(a.asset_class_path).endswith("ObjectRedirector") for a in devkit_assets):
+                continue
+            if dep_str.lower() not in game_packages:
                 phantoms.append(dep_str)
 
         if phantoms:
